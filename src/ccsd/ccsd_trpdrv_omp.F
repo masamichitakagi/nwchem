@@ -143,6 +143,7 @@
       else
          call qenter('trpdrv',0)
       endif
+      call armci_init_async_thread()
       inode=-1
       next=nxtask(nodes, 1)
       do klo = 1, nocc, kchunk
@@ -431,6 +432,7 @@ c                            call pcontrol(1,"trpdrv-e"//char(0))
             endif
          end do
       end do
+      call armci_finalize_async_thread()
       call ga_sync()
       next=nxtask(-nodes, 1)
       call ga_sync()
