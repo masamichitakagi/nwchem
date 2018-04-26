@@ -154,6 +154,7 @@
                inode=inode+1
                if (inode.eq.next)then
 
+                  call pcontrol(1,"trpdrv_nbget1"//char(0))
                   call ga_nbget(g_objv,1+(j-1)*lnov,j*lnov,av,av,Dja,
      &                          lnov,nbh_objv1)
                   do k = klo, khi
@@ -182,8 +183,10 @@
      &                    2*lnoov+khi*lnov,av,av,Xka,(khi-klo+1)*lnov,
      &                    nbh_objv3)
                   endif
+                  call pcontrol(-1,"trpdrv_nbget1"//char(0))
 
                   do i=1,nocc
+                     call pcontrol(1,"trpdrv_nbget2"//char(0))
 
                      call ga_nbget(g_objv,1+(j-1)*nvir+(i-1)*lnov,
      &                    j*nvir+(i-1)*lnov,av,av,Djia,nvir,nbh_objv5)
@@ -207,8 +210,10 @@
                      call dcopy(nvir,Dja(1+(i-1)*nvir),1,dintc1,1)
                      call ga_nbwait(nbh_objv5) ! Djia
                      call dcopy(nvir,Djia,1,dintx1,1)
+                     call pcontrol(-1,"trpdrv_nbget2"//char(0))
 
                      do k=klo,min(khi,i)
+                        call pcontrol(1,"trpdrv_nbget3"//char(0))
 
                         call dcopy(nvir,t1((k-1)*nvir+1),1,t1v1,1)
                         call dcopy(nvir,Dja(1+(k-1)*nvir),1,dintc2,1)
@@ -218,8 +223,10 @@
                         emp5i = 0.0d0
                         emp4k = 0.0d0
                         emp5k = 0.0d0
+                        call pcontrol(-1,"trpdrv_nbget3"//char(0))
                         if (occsdps) then
                            call pstat_on(ps_doxxx)
+c                           call pcontrol(1,"doxxx"//char(0))
                         else
                            call qenter('doxxx',0)
                         endif
@@ -229,6 +236,7 @@
 !  All of these are independent of k, so we wait on them only
 !  at the first trip of the loop.
 !
+                        call pcontrol(1,"trpdrv_nbget4"//char(0))
                         if (k.eq.klo) then
                             call ga_nbwait(nbh_objv2)
                             call ga_nbwait(nbh_objv3)
@@ -245,6 +253,7 @@
                             call ga_nbwait(nbh_coul1)
                             call ga_nbwait(nbh_coul2)
                         endif
+                        call pcontrol(-1,"trpdrv_nbget4"//char(0))
 !$omp parallel
 !$omp& shared(eorb)
 !$omp& shared(f1n,f2n,f3n,f4n,f1t,f2t,f3t,f4t)
@@ -323,7 +332,9 @@
 !$omp master
                         if (occsdps) then
                            call pstat_off(ps_doxxx)
+c                           call pcontrol(-1,"doxxx"//char(0))
                            call pstat_on(ps_tengy)
+c                           call pcontrol(1,"tengy"//char(0))
                         else
                            call qexit('doxxx',0)
                            call qenter('tengy',0)
@@ -387,6 +398,8 @@
 !$omp end parallel
                          if (occsdps) then
                             call pstat_off(ps_tengy)
+c                            call pcontrol(-1,"tengy"//char(0))
+c                            call pcontrol(1,"trpdrv-e"//char(0))
                          else
                             call qexit('tengy',0)
                          endif

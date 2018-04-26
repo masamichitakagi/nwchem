@@ -122,6 +122,7 @@ c
       else
          call qenter('trpmos',0)
       endif
+c      call pcontrol(1,"trpmos1"//char(0))
 
 c
 c  General basis info
@@ -175,6 +176,8 @@ c
  888        format(16i3)
           endif
        endif
+c      call pcontrol(-1,"trpmos1"//char(0))
+c      call pcontrol(1,"trpmos2"//char(0))
 c
 c  Integrals allocation
 c
@@ -225,6 +228,8 @@ c
        status = ma_push_get(MT_DBL,n_ssni,'ssni block',l_ssni,k_ssni)
        if (.not.(status)) call errquit('cannot allocate local memory',0,
      &       MA_ERR)
+c      call pcontrol(-1,"trpmos2"//char(0))
+c      call pcontrol(1,"trpmos3_"//char(0))
 c
 c Initialize
 c
@@ -235,9 +240,11 @@ c
 
        ploop = 0
        next = nxtask(num_nodes, 1)
+c      call pcontrol(-1,"trpmos3_"//char(0))
 c
 c  4-fold shell loop
 c
+c      call pcontrol(1,"trpmos4"//char(0))
        do ish0=1,nsh
          do jsh0=1,ish0
            ish = max(int_mb(k_shmap+ish0-1),int_mb(k_shmap+jsh0-1))
@@ -286,6 +293,7 @@ c
      $                                   l_iscr, k_iscr)) 
      $               call errquit('moints_trp: push scr',mem2,MA_ERR)
 
+c                   call pcontrol(1,"gblk"//char(0))
                    call moints_gblk( basis, ish, jsh,
      $                               kshlo, kshhi, lshlo, lshhi,
      $                               int_mb(k_shmap),int_mb(k_rbfmap),
@@ -295,6 +303,7 @@ c
      $                               ibflo, ibfhi, jbflo, jbfhi,
      $                               kbflo, kbfhi, lbflo, lbfhi,
      $                               dbl_mb(k_ssbb) )
+c                   call pcontrol(-1,"gblk"//char(0))
 
                    if (.not. ma_pop_stack(l_iscr))
      $               call errquit('moints_trp: pop iscr',l_iscr,MA_ERR)
@@ -312,28 +321,34 @@ c
      $                  call errquit('moints_trp: push ssbbt',n_ssbb,
      $                               MA_ERR)
 
+c                   call pcontrol(1,"moints_blktr"//char(0))
                      call moints_blktr( ilen, jlen, kblen, lblen,
      $                                  dbl_mb(k_ssbb),
      $                                  dbl_mb(k_ssbbt))
+c                   call pcontrol(-1,"moints_blktr"//char(0))
 
+c                   call pcontrol(1,"moints_trf1"//char(0))
                      call moints_trf1( nbf, 1, nbf, mo1_lo, mo1_hi,
      $                                 ilen, jlen, kbflo, kbfhi,
      $                                 lbflo, lbfhi, 1.d0,
      $                                 dbl_mb(k_ssbb),
      $                                 dbl_mb(k_ssbbt), dbl_mb(k_xmo),
      $                                 dbl_mb(k_ssni), dbl_mb(k_hlp) )
+c                   call pcontrol(-1,"moints_trf1"//char(0))
 
                      if (.not. ma_pop_stack(l_ssbbt))
      $                    call errquit('moints_trp: pop ssbbt',l_ssbbt,
      $                                 MA_ERR)
 
                    else
+c                   call pcontrol(1,"moints_trf1"//char(0))
                      call moints_trf1( nbf, 1, nbf, mo1_lo, mo1_hi,
      $                                 ilen, jlen, kbflo, kbfhi,
      $                                 lbflo, lbfhi, half,
      $                                 dbl_mb(k_ssbb),
      $                                 dbl_mb(k_ssbb), dbl_mb(k_xmo),
      $                                 dbl_mb(k_ssni), dbl_mb(k_hlp) )
+c                   call pcontrol(-1,"moints_trf1"//char(0))
                    endif
 
                    if (.not. ma_pop_stack(l_hlp))
@@ -355,6 +370,7 @@ c
      $                                  l_hlp2,k_hlp2))
      $              call errquit('moints_trp: push hlp2',n_hlp2,MA_ERR)
 
+                   call pcontrol(1,"mo_trp_trf23K"//char(0))
                  call mo_trp_trf23K( nbf, occ_start,
      $                               mo1_lo, mo1_hi, nmo2,
      $                               mo2_lo, mo2_hi, ibflo, ibfhi,
@@ -363,6 +379,7 @@ c
      $                               dbl_mb(k_hlp), dbl_mb(k_hlp),
      $                               dbl_mb(k_xmo), cmo, 
      $                               g_exch, ncor, nocc)
+                   call pcontrol(-1,"mo_trp_trf23K"//char(0))
 
                  if (.not. ma_pop_stack(l_hlp2))
      $             call errquit('moints_trp: pop hlp2',l_hlp2,MA_ERR)
@@ -374,11 +391,13 @@ c
      $                                  l_hlp3,k_hlp3))
      $              call errquit('moints_trp: push hlp3',n_hlp3,MA_ERR)
 
+                   call pcontrol(1,"mo_trp_trf2J"//char(0))
                  call mo_trp_trf2J( nbf, occ_start, mo1_lo, mo1_hi,
      $                              ibflo, ibfhi, jbflo, jbfhi,
      $                              dbl_mb(k_ssni),
      $                              dbl_mb(k_hlp3), dbl_mb(k_xmo),
      $                              g_coul, ncor, nocc)
+                   call pcontrol(-1,"mo_trp_trf2J"//char(0))
 
                  if (.not. ma_pop_stack(l_hlp3))
      $             call errquit('moints_trp: pop hlp3',l_hlp3,MA_ERR)
@@ -393,6 +412,7 @@ c
          enddo
        enddo
        next = nxtask(-num_nodes, 1)
+c      call pcontrol(-1,"trpmos4"//char(0))
 c
 c Clean-up
 c
@@ -401,16 +421,20 @@ c
 c
        status = ma_push_get(MT_DBL,(nbf*nbf),'hlp',l_hlp,k_hlp)
        if (oexch) then
+c          call pcontrol(1,"mo_trp_Ktrf4"//char(0))
            call mo_trp_Ktrf4( g_exch, occ_start, mo1_lo, mo1_hi,
      $                        mo2_lo, mo2_hi, nbf, cmo,
      $                        dbl_mb(k_hlp), ncor, nocc,
      $                        osym, int_mb(k_sym) )
+c          call pcontrol(-1,"mo_trp_Ktrf4"//char(0))
        endif
        if (ocoul) then
+c          call pcontrol(1,"mo_trp_Jtrf34"//char(0))
          call mo_trp_Jtrf34( g_coul, occ_start, mo1_lo, mo1_hi,
      $                       mo2_lo, mo2_hi, nbf, cmo,
      $                       dbl_mb(k_hlp), ncor, nocc, nvir,
      $                       osym, int_mb(k_sym) )
+c          call pcontrol(-1,"mo_trp_Jtrf34"//char(0))
        endif
 
        call ga_sync
