@@ -371,6 +371,7 @@ c                   call pcontrol(-1,"moints_trf1"//char(0))
      $              call errquit('moints_trp: push hlp2',n_hlp2,MA_ERR)
 
                    call pcontrol(1,"mo_trp_trf23K"//char(0))
+c                   call mysyscall1(701, 1 + 2 + Z'80000000')
                  call mo_trp_trf23K( nbf, occ_start,
      $                               mo1_lo, mo1_hi, nmo2,
      $                               mo2_lo, mo2_hi, ibflo, ibfhi,
@@ -380,6 +381,7 @@ c                   call pcontrol(-1,"moints_trf1"//char(0))
      $                               dbl_mb(k_xmo), cmo, 
      $                               g_exch, ncor, nocc)
                    call pcontrol(-1,"mo_trp_trf23K"//char(0))
+c                   call mysyscall1(701, 4 + 8 + Z'80000000')
 
                  if (.not. ma_pop_stack(l_hlp2))
      $             call errquit('moints_trp: pop hlp2',l_hlp2,MA_ERR)
@@ -556,6 +558,7 @@ cstaggering to avoid congestion in ga-acc
 #endif
 #ifndef NOCOMMS
            ab = (a-olo)*nocc+b-ostart+1
+c           call myprintf4(ivlo,ivhi,ab,ab)
            call ga_acc(g_exch,ivlo,ivhi,ab,ab,h1,nni,1.d0)
 #endif
          enddo
@@ -605,6 +608,7 @@ cstaggering to avoid congestion in ga-acc
 #endif
 #ifndef NOCOMMS
           ab = (a-olo)*nocc+b-ostart+1
+c          call myprintf4(jvlo,jvhi,ab,ab)
           call ga_acc(g_exch,jvlo,jvhi,ab,ab,h2,nnj,1.d0)
 #endif
          enddo
