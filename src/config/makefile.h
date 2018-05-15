@@ -2503,7 +2503,7 @@ ifdef OLD_GA
 else
   ifeq ($(ARMCI_NETWORK),ARMCI)
     ifdef EXTERNAL_ARMCI_PATH
-      CORE_LIBS += -L$(EXTERNAL_ARMCI_PATH)/lib -larmci
+      CORE_LIBS += -L$(EXTERNAL_ARMCI_PATH)/lib -larmci -L$(UTI_PATH)/lib -luti -Wl,-rpath,$(UTI_PATH)/lib
     else
       CORE_LIBS += -L$(NWCHEM_TOP)/src/tools/install/lib -larmci
     endif
